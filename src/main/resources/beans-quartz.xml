@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="logPrinter" class="com.ujiuye.jobs.LogPrinter"></bean>
+    <!-- JobDetail对象 -->
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="logPrinter" />
+        <property name="targetMethod" value="printLog" />
+    </bean>
+    <!-- 配置Trigger触发器 -->
+    <!--<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">-->
+        <!--&lt;!&ndash; see the example of method invoking job above &ndash;&gt;-->
+        <!--<property name="jobDetail" ref="jobDetail" />-->
+        <!--&lt;!&ndash; 10 seconds &ndash;&gt;-->
+        <!--<property name="startDelay" value="10000" />-->
+        <!--&lt;!&ndash; repeat every 5 seconds &ndash;&gt;-->
+        <!--<property name="repeatInterval" value="5000" />-->
+    <!--</bean>-->
+
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail" />
+        <!-- run every morning at 6 AM -->
+        <property name="cronExpression" value="0/5 * * * * ?" />
+    </bean>
+    <!-- 配置scheduler容器 -->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger" />
+                <!--<ref bean="simpleTrigger" />-->
+            </list>
+        </property>
+    </bean>
+</beans>
